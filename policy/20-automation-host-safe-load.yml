@@ -1,0 +1,7 @@
+# Replace the below placeholder "{{ Automation_Operations }}" with the corresponding safe name associated with the Conjur Onboarding Automation service. 
+# Then use the following commmand to load the policy:
+# conjur policy load -b data/vault/{{ Automation_Operations }}/delegation -f 20-automation-host-safe-load.yml
+
+- !grant
+  role: !group consumers
+  member: !host /data/apps/system:serviceaccount:conjur-automation:onboarding

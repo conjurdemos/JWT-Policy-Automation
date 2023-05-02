@@ -1,0 +1,28 @@
+# Load the policy to 'data' by running the following command:
+# conjur policy load -b data -f 10-proxy-auth-to-auto-host.yml
+- !group apps-admins
+
+- !policy
+  id: apps
+  owner: !group apps-admins
+  body: 
+    - !host
+      id: system:serviceaccount:conjur-automation:onboarding
+      annotations:
+        authn-jwt/shared-eks/kubernetes.io/namespace: conjur-automation
+        authn-jwt/shared-eks/kubernetes.io/serviceaccount/name: onboarding
+        authn/api-key: true
+
+    - !group authenticators
+
+    - !grant
+      role: !group authenticators
+      member: !host system:serviceaccount:conjur-automation:onboarding
+
+- !grant
+  role: !group apps-admins
+  member: !host apps/system:serviceaccount:conjur-automation:onboarding
+
+- !grant
+  role: !group vault-admins
+  member: !host apps/system:serviceaccount:conjur-automation:onboarding
