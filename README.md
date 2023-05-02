@@ -14,17 +14,17 @@ by CyberArk**. For more detailed information on our certification levels, see [o
 
 The below sections describe establishing and setting up resource dependencies in CyberArk Privilege Cloud ISPSS and Kubernetes.
 
-#### ISPSS
+### ISPSS
 
 Administrative access to Identity Administration, Privilege Cloud and Conjur Cloud.
 
-#### Kubernetes
+### Kubernetes
 
 It is expected that prior to running the onboarding service, the preparation of the Kubernetes cluster and namespace has been performed in accordance with the documentation. See below link for reference:
 
 [**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
 
-#### Certificates
+### Certificates
 
 A certificate must be issued from a internal Certificate Authority (CA), as well as the signing key for the certifiicate.
 
