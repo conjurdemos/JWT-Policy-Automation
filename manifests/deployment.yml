@@ -1,0 +1,86 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: onboarding
+  name: onboarding
+spec:
+  selector:
+    matchLabels:
+      app: onboarding
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: onboarding
+    spec:
+      serviceAccountName: onboarding
+      containers:
+        - name: app
+          image: <img>
+          ports:
+            # Used for HTTPS Services
+            - containerPort: 8443
+              name: on-svc-port
+            # Used for health check, do not edit.
+            - containerPort: 8080
+              name: hc-svc-port
+          env:
+          - name: CONJUR_TOKEN_PATH
+            value: ""
+          - name: AUTHN_STRATEGY
+            value: "k8s"
+          - name: SERVICE_PORT
+            value: "8443"
+          - name: CONJUR_URL
+            value: ""
+          - name: CONJUR_SAFE
+            value: ""
+          - name: CONJUR_PASQUERY
+            value: ""
+          - name: CONJUR_OPCQUERY
+            value: ""
+          - name: CONJUR_OPKQUERY
+            value: ""
+          - name: SAFE_PREFIX
+            value: ""
+          - name: PAS_URI
+            value: ""
+          - name: TENANT
+            value: ""
+          - name: CONJUR_HOST_BRANCH
+            value: ""
+          envFrom:
+          - configMapRef:
+              name: conjur-connect
+          volumeMounts:
+          - mountPath: /run/conjur
+            name: conjur-access-token
+            readOnly: true
+## Conjur Authenticator Below
+        - image: cyberark/conjur-authn-k8s-client
+          imagePullPolicy: Always
+          name: authenticator
+          env:
+            - name: JWT_TOKEN_PATH
+              value: /var/run/secrets/tokens/jwt
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - mountPath: /run/conjur
+              name: conjur-access-token
+            - mountPath: /var/run/secrets/tokens
+              name: jwt-token
+      volumes:
+        - name: conjur-access-token
+          emptyDir:
+            medium: Memory
+        - name: jwt-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: jwt
+                  expirationSeconds: 6000
+                  audience: conjur

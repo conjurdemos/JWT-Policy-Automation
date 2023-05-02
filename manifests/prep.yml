@@ -1,0 +1,13 @@
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: cyberark-conjur
+  labels:
+    name: cyberark-conjur
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: onboarding
+  namespace: cyberark-conjur
