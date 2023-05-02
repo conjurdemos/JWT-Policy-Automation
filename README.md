@@ -1,8 +1,7 @@
 # JWT Policy Automation
-TODO: Insert brief description of your project
+JWT Policy Automation is a demonstration service that automates onboarding of a Safe into Privilege Cloud, onboarding a credential into that safe and onboarding a Kubernetes JWT annotated host with access through Conjur Cloud.
 
 ## Certification level
-TODO: Select the appropriate certification level section below, and remove all others.
 
 ![](https://img.shields.io/badge/Certification%20Level-Community-28A745?link=https://github.com/cyberark/community/blob/master/Conjur/conventions/certification-levels.md)
 
