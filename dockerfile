@@ -12,10 +12,10 @@ COPY ver ./ver
 RUN go get -d -v
 
 # Build the binary.
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/rustyroo .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/jwtservice .
 
 FROM scratch
 
 # Copy our static executable.
 COPY --from=builder /app/* /app/
-ENTRYPOINT ["/app/rustyroo"]
+ENTRYPOINT ["/app/jwtservice"]
