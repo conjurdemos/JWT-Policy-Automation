@@ -9,8 +9,9 @@
     - !host
       id: system:serviceaccount:conjur-automation:onboarding
       annotations:
-        authn-jwt/shared-eks/kubernetes.io/namespace: conjur-automation
-        authn-jwt/shared-eks/kubernetes.io/serviceaccount/name: onboarding
+        # Update {{ cluster-id }} with the cluster this is being deployed to.
+        authn-jwt/{{ cluster-id }}/kubernetes.io/namespace: conjur-automation
+        authn-jwt/{{ cluster-id }}/kubernetes.io/serviceaccount/name: onboarding
         authn/api-key: true
 
     - !group authenticators

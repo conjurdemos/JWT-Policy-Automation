@@ -2,12 +2,12 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: cyberark-conjur
+  name: conjur-automation
   labels:
-    name: cyberark-conjur
+    name: conjur-automation
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: onboarding
-  namespace: cyberark-conjur
+  namespace: conjur-automation
