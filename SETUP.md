@@ -415,6 +415,12 @@ Under `env`, update the manifest with the following values:
 ...
 ```
 
+Once all validation has been completed and `deployment.yml` is properly configured, apply the modified manifest:
+
+```
+kubectl apply -f deployment.yml
+```
+
 Apply the final manifest which stands up the service:
 
 ```
