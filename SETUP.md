@@ -176,7 +176,7 @@ To add the user to PCloud:
 
 <img src="www/image-16.jpg" width="36%" height="18%">
 
-1. From Privilege Cloud, click **Accounts** from the right-menu context menu
+1. From Privilege Cloud, click **Accounts** from the left-hand context menu
 
 2. In the top right-corner of the window, select **Add account**
 
@@ -194,7 +194,7 @@ To add the user to PCloud:
 | ----------------- | ------------------------------ | --------------------- |
 | Address           | `{{ onboarding-service-dns }}` | The address of the DNS entry that resolves the service in K8s |
 | Username          | `aap****_onboarding@{{ tenant-id }}` | CyberArk Cloud Directory User |
-| Customize account name |  onboarding-sa `**`             | Friendly name for CyberArk Cloud Directory User |
+| Customize account name |  `onboarding-sa` `**`             | Friendly name for CyberArk Cloud Directory User |
 
 **Additional properties**
 
@@ -232,7 +232,7 @@ For Cert:
 
 <img src="www/image-17.jpg" width="36%" height="18%">
 
-1. From Privilege Cloud, click **Accounts** from the right-menu context menu
+1. From Privilege Cloud, click **Accounts** from the left-hand context menu
 
 2. In the top right-corner of the window, select **Add account**
 
@@ -268,7 +268,7 @@ For Key:
 <img src="www/image-15.jpg" width="80%" height="40%">
 <img src="www/image-17.jpg" width="36%" height="18%">
 
-1. From Privilege Cloud, click **Accounts** from the right-menu context menu
+1. From Privilege Cloud, click **Accounts** from the left-hand context menu
 
 2. In the top right-corner of the window, select **Add account**
 
