@@ -315,7 +315,7 @@ Using the Conjur Cloud CLI:
   - First policy load:
 
 ```
-conjur policy load -b data/apps -f 10-proxy-auth.yml
+conjur policy load -b data -f 10-proxy-auth.yml
 ```
 
 This does a few things –
