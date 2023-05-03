@@ -30,6 +30,15 @@ It is expected that prior to running the onboarding service, the preparation of 
 
 [**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
 
+**Important**: When on step [Prepare the Application Namespace](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm#Preparetheapplicationnamespace), be sure to modify the `helm install` command so that line 3 of the command matches the below (`conjur-automation`):
+
+```
+ 1  helm install namespace-prep cyberark/conjur-config-namespace-prep \
+ 2  --create-namespace \
+ 3  --namespace conjur-automation \
+...
+```
+
 ### Prerequisites: Certificates
 
 A certificate must be issued from a internal Certificate Authority (CA), as well as the signing key for the certifiicate.
@@ -182,7 +191,7 @@ To add the user to PCloud:
 
 3. Under **Select system type**, choose **Application** > Next
 
-4. Under **Select platfrom**, choose **CyberArk PTA**
+4. Under **Select platform**, choose **CyberArk PTA**
 
 5. Under **Select Safe**, choose safename (i.e. `AAM_Deployment_Operations` following our example from above) `*`
 
@@ -238,7 +247,7 @@ For Cert:
 
 3. Under **Select system type**, choose ***NIX** > Next
 
-4. Under **Select platfrom**, choose **Unix via SSH Keys**
+4. Under **Select platform**, choose **Unix via SSH Keys**
 
 5. Under **Select Safe**, choose safename (i.e. `AAM_Deployment_Operations` following the example from above) `*`
 
@@ -340,7 +349,7 @@ conjur policy load -b data/vault/{{ Automation_Operations }}/delegation -f 20-au
 Prep the namespace for the onboarding service to run.
 
 ```
-kubectl apply -f prep.yml
+kubectl create -f prep.yml
 ```
 
 This will create the namespace and the service account.
@@ -418,13 +427,13 @@ Under `env`, update the manifest with the following values:
 Once all validation has been completed and `deployment.yml` is properly configured, apply the modified manifest:
 
 ```
-kubectl apply -f deployment.yml
+kubectl create -f deployment.yml -n conjur-automation
 ```
 
 Apply the final manifest which stands up the service:
 
 ```
-kubectl apply -f service.yml -n cyberark-conjur
+kubectl create -f service.yml -n conjur-automation
 ``` 
 
 This command gets the  DNS entry for the service...
