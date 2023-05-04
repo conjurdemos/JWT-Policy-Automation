@@ -20,9 +20,33 @@ Administrative access to Identity Administration, Privilege Cloud and Conjur Clo
 
 ### Kubernetes
 
-It is expected that prior to running the onboarding service, the preparation of the Kubernetes cluster and namespace has been performed in accordance with the documentation. See below link for reference:
+It is expected that prior to running the onboarding service, the preparation of the Kubernetes cluster and namespace has been performed in accordance with the documentation.
 
-[**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
+Using helm, prepare the Kubernetes cluster with Conjur golden config map (being sure to replace any `{{ placeholder }}` in the below snippet):
+
+```
+helm install "cluster-prep" cyberark/conjur-config-cluster-prep  -n "cyberark-conjur" \
+      --create-namespace \
+      --set conjur.account="conjur" \
+      --set conjur.applianceUrl="https://{{ SUBDOMAIN }}.secretsmgr.cyberark.cloud/api" \
+      --set conjur.certificateBase64=$(cat {{ CA_FILE_PATH }} | base64 -w 0) \
+      --set authnK8s.authenticatorID="{{ AUTHN_JWT_SERVICE_ID ]}" \
+      --set authnK8s.clusterRole.create=false \
+      --set authnK8s.serviceAccount.create=false
+```
+
+Replace values in the above code snippet using the reference table below:
+
+| Placeholder name             | Example value        | Description       |
+| ---------------------------- | -------------------- | ----------------- |
+| `{{ SUBDOMAIN }}`            | acme-corp            | Subdomain of Conjur Cloud in ISPSS |
+| `{{ CA_FILE_PATH }}`         | conjur.pem           | Conjur Cloud public certificate    |
+| `{{ AUTHN_JWT_SERVICE_ID }}` | shared-eks `*`       | Some identifier for k8s cluster    |
+
+> `*`: In 'Prerequisites: Conjur' section, this is `{{ cluster-id }}`
+
+References:
+* [**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
 
 ### Certificates
 
@@ -66,13 +90,15 @@ Navigating to the [onboarding service user form](https://onboarding.cybr.andyhar
 
 | Attribute             | Value                        | Description               |
 | --------------------- | ---------------------------- | ------------------------- |
-| Platform              | `PROD_PostgreSQL`            | Platform used in Onboard  |
+| Platform              | `PROD_PostgreSQL` `*`        | Platform used in Onboard  |
 | Username              | `psql-adm`                   | Demo psql service account |
 | Password              | `CyberArk1234##`             | Demo password             |
 | Address               | `https://some-test.com`      | `https://some-test.com` is a dummy service address for demo purposes |
 | Query                 | `postgre`                    | The developer query for discovery in Conjur |
 | Port                  | `5432`                       | `5432` is the service port for PSQL; Can change depending on app-specific port dependencies |
 | Database              | `db-test`                    | `some-test` web service Database name |
+
+> `*`: This value should match a database platform previously configured and currently enabled in Privilege Cloud
 
 **Workload Identity**
 
