@@ -66,13 +66,15 @@ Navigating to the [onboarding service user form](https://onboarding.cybr.andyhar
 
 | Attribute             | Value                        | Description               |
 | --------------------- | ---------------------------- | ------------------------- |
-| Platform              | `PROD_PostgreSQL`            | Platform used in Onboard  |
+| Platform              | `PROD_PostgreSQL` `*`        | Platform used in Onboard  |
 | Username              | `psql-adm`                   | Demo psql service account |
 | Password              | `CyberArk1234##`             | Demo password             |
 | Address               | `https://some-test.com`      | `https://some-test.com` is a dummy service address for demo purposes |
 | Query                 | `postgre`                    | The developer query for discovery in Conjur |
 | Port                  | `5432`                       | `5432` is the service port for PSQL; Can change depending on app-specific port dependencies |
 | Database              | `db-test`                    | `some-test` web service Database name |
+
+> `*`: This value should match a database platform previously configured and currently enabled in Privilege Cloud
 
 **Workload Identity**
 
