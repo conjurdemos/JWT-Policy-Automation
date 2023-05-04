@@ -49,7 +49,7 @@ Replace values in the above code snippet using the reference table below:
 | `{{ CA_FILE_PATH }}`         | conjur.pem           | Conjur Cloud public certificate    |
 | `{{ AUTHN_JWT_SERVICE_ID }}` | shared-eks `*`       | Some identifier for k8s cluster    |
 
-> `*`: In 'Prerequisites: Conjur' section, this is `{{ cluster-id }}``
+> `*`: In 'Prerequisites: Conjur' section, this is `{{ cluster-id }}`
 
 Create the namespace for the onboarding service to run.
 
