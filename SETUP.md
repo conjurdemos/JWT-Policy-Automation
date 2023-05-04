@@ -327,9 +327,9 @@ For Key:
 
 Download the following policy files from the project directory in [Github](https://github.com/conjurdemos/JWT-Policy-Automation):
 
-* [00-authn-jwt-config.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/00-authn-jwt-config.yml)
 * [10-proxy-auth-to-auto-host.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/10-proxy-auth-to-auto-host.yml)
-* [20-automation-host-safe-load.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/10-proxy-auth-to-auto-host.yml)
+* [20-automation-host-safe-load.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/20-automation-host-safe-load.yml)
+* [30-authn-jwt-config.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/30-authn-jwt-config.yml)
 
 Using the Conjur Cloud CLI:
 
