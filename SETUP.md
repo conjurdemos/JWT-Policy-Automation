@@ -51,27 +51,6 @@ Replace values in the above code snippet using the reference table below:
 
 > `*`: In 'Prerequisites: Conjur' section, this is `{{ cluster-id }}`
 
-Create the namespace for the onboarding service to run:
-
-```
-kubectl create -f prep.yml
-```
-
-This will create the namespace `conjur-automation` and the`onboarding` service account.
-
-Now that the namespace has been created, prep it using helm:
-
-```
-helm install namespace-prep cyberark/conjur-config-namespace-prep \
---namespace conjur-automation \
---set conjurConfigMap.authnMethod="authn-jwt" \
---set authnK8s.goldenConfigMap="conjur-configmap" \
---set authnK8s.namespace="cyberark-conjur" \
---set authnRoleBinding.create="false"
-```
-
-This will make available to `conjur-automation` namespace the golden config map created above and all the configuration details therein.
-
 > References:
 > * [**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
 
@@ -356,7 +335,7 @@ Using the Conjur Cloud CLI:
 
 > **Note**: Please see [Installing the CLI](https://docs-staging.conjur.org/ConjurCloud/en/Content/ConjurCloud/CLI/cli-setup.htm?tocpath=Administration%7CConjur%20Cloud%20CLI%7C_____1) if not installed previously
 
-Make the following modifications prior to loading policy files `00-authn-jwt-config.yml` and `10-proxy-auth-to-auto-host.yml`:
+Make the following modifications prior to loading policy files `30-authn-jwt-config.yml` and `10-proxy-auth-to-auto-host.yml`:
 
 Replace `{{ cluster-id }}` with `AUTHN_JWT_SERVICE_ID` value (i.e., `shared-eks`)
 
@@ -367,19 +346,6 @@ After both files have been edited...
   - First policy load:
 
 ```
-conjur policy load -b conjur/authn-jwt -f 00-authn-jwt-config.yml
-```
-
-This does the following –
-  1. Creates a webservice and resource definitions for k8s workloads to authenticate against
-  2. Creates a group for workloads using this webservice
-  3. Entitles the group `data/apps/authenticators` to the webservice
-
-The resource definition will then need to be populated with configuration details of the K8s cluster, such as `jwks-uri` and `issuer`. Please refer to the [following section](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-authn.htm#ConfiguretheJWTAuthenticator) from Conjur Cloud official docs.
-
-  - Second policy load:
-
-```
 conjur policy load -b data -f 10-proxy-auth.yml
 ```
 
@@ -388,7 +354,7 @@ This does a few things –
   2. Shares authentication entitlements to the authenticators under parent branch `data/apps`
   3. Grants resource entitlements to safes accessible by `data/apps-admins` and `data/vault-admins`
 
-  - Third policy load:
+  - Second policy load:
 
 ```
 conjur policy load -b data/vault/{{ Automation_Operations }}/delegation -f 20-automation-host-safe-load.yml
@@ -398,9 +364,43 @@ conjur policy load -b data/vault/{{ Automation_Operations }}/delegation -f 20-au
 
 - This will add the onboarding service account created in `10-proxy-auth.yml` to the consumers group for its corresponding safe branch in Conjur
 
+  - Third policy load:
+
+```
+conjur policy load -b conjur/authn-jwt -f 30-authn-jwt-config.yml
+```
+
+This does the following –
+  1. Creates a webservice and resource definitions for k8s workloads to authenticate against
+  2. Creates a group for workloads using this webservice
+  3. Entitles the group `data/apps/authenticators` to the webservice
+
+The resource definition will then need to be populated with configuration details of the K8s cluster, such as `jwks-uri` and `issuer`. Please refer to the [following section](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-authn.htm#ConfiguretheJWTAuthenticator) from Conjur Cloud official docs.
+
 ## Setup
 
 ### Kubernetes
+
+Create the namespace for the onboarding service to run:
+
+```
+kubectl create -f prep.yml
+```
+
+This will create the namespace `conjur-automation` and the`onboarding` service account.
+
+Now that the namespace has been created, prep it using helm:
+
+```
+helm install namespace-prep cyberark/conjur-config-namespace-prep \
+--namespace conjur-automation \
+--set conjurConfigMap.authnMethod="authn-jwt" \
+--set authnK8s.goldenConfigMap="conjur-configmap" \
+--set authnK8s.namespace="cyberark-conjur" \
+--set authnRoleBinding.create="false"
+```
+
+This will make available to `conjur-automation` namespace the golden config map created above and all the configuration details therein.
 
 Populate the environment variables in `manifests/deployment.yml`.
 
