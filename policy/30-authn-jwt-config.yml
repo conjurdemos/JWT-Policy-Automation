@@ -20,7 +20,7 @@
 
     - !permit
       role: !group apps
-      privilege: [ read, authenticate ]
+      privilege: [ authenticate ]
       resource: !webservice
 
     - !webservice status
