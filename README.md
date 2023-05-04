@@ -57,30 +57,30 @@ Navigating to the [onboarding service user form](https://onboarding.cybr.andyhar
 
 **Safe Information**
 
-| Attribute             | Value                         | Description           |
-| --------------------- | ----------------------------- | --------------------- |
-| Application Identity  | postgre                       | The CMBD CI Name or Label (Configuration Identifier) |
-| Ownership Group       | user@cyberark.cloud.4272      | The group that should have access to the safe     |
+| Attribute             | Value                           | Description           |
+| --------------------- | ------------------------------- | --------------------- |
+| Application Identity  | `postgre`                       | The CMBD CI Name or Label (Configuration Identifier) |
+| Ownership Group       | `user@cyberark.cloud.4272`      | The group that should have access to the safe     |
 
 **Credential Information**
 
-| Attribute             | Value                      | Description               |
-| --------------------- | -------------------------- | ------------------------- |
-| Platform              | PROD_PostgreSQL            | Platform used in Onboard  |
-| Username              | psql-adm                   | Demo psql service account |
-| Password              | CyberArk1234##             | Demo password             |
-| Address               | https://some-test.com      | `https://some-test.com` is a dummy service address for demo purposes |
-| Query                 | postgre                    | The developer query for discovery in Conjur |
-| Port                  | 5432                       | `5432` is the service port for PSQL; Can change depending on app-specific port dependencies |
-| Database              | db-test                    | `some-test` web service Database name |
+| Attribute             | Value                        | Description               |
+| --------------------- | ---------------------------- | ------------------------- |
+| Platform              | `PROD_PostgreSQL`            | Platform used in Onboard  |
+| Username              | `psql-adm`                   | Demo psql service account |
+| Password              | `CyberArk1234##`             | Demo password             |
+| Address               | `https://some-test.com`      | `https://some-test.com` is a dummy service address for demo purposes |
+| Query                 | `postgre`                    | The developer query for discovery in Conjur |
+| Port                  | `5432`                       | `5432` is the service port for PSQL; Can change depending on app-specific port dependencies |
+| Database              | `db-test`                    | `some-test` web service Database name |
 
 **Workload Identity**
 
 | Attribute             | Value                      | Description          |
 | --------------------- | -------------------------- | -------------------- |
-| Namespace             | services              | `https://some-test.com` is a dummy service address for demo purposes |
-| Service Account       | k8s-sa                | `k8s-sa` is the default service account created for the demo purposes |
-| Cluster               | shared-eks            | `shared-eks` is the name of the eks cluster authenticator webservice configured and enabled in Conjur Cloud |
+| Namespace             | `services`                 | `https://some-test.com` is a dummy service address for demo purposes |
+| Service Account       | `k8s-sa`                   | `k8s-sa` is the default service account created for the demo purposes |
+| Cluster               | `shared-eks`               | `shared-eks` is the name of the eks cluster authenticator webservice configured and enabled in Conjur Cloud |
 
 
 Once the form has been filled out like above, select the `SUBMIT` button at the bottom of the page.
