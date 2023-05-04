@@ -2,14 +2,8 @@
   id: {{ cluster-id }}
   body:
     - !webservice
-
-    # Uncomment one of following variables depending on the public availability
-    # of the Service Account Issuer Discovery service in Kubernetes
-    # If the service is publicly available, uncomment 'jwks-uri'.
-    # If the service is not available, uncomment 'public-keys'
+    
     - !variable jwks-uri
-    # - !variable public-keys
-
     - !variable issuer
     - !variable token-app-property
     - !variable identity-path
@@ -20,7 +14,7 @@
 
     - !permit
       role: !group apps
-      privilege: [ read, authenticate ]
+      privilege: [ authenticate ]
       resource: !webservice
 
     - !webservice status
