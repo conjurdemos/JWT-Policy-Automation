@@ -51,7 +51,7 @@ Replace values in the above code snippet using the reference table below:
 
 > `*`: In 'Prerequisites: Conjur' section, this is `{{ cluster-id }}`
 
-Create the namespace for the onboarding service to run.
+Create the namespace for the onboarding service to run:
 
 ```
 kubectl create -f prep.yml
