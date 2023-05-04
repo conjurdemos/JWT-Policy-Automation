@@ -26,18 +26,54 @@ The below sections describe establishing and setting up resource dependencies in
 
 ### Prerequisites: Kubernetes
 
-It is expected that prior to running the onboarding service, the preparation of the Kubernetes cluster and namespace has been performed in accordance with the documentation. See below link for reference:
+It is expected that prior to running the onboarding service, the preparation of the Kubernetes cluster and namespace has been performed in accordance with the documentation.
 
-[**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
-
-**Important**: When on step [Prepare the Application Namespace](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm#Preparetheapplicationnamespace), be sure to modify the `helm install` command so that line 3 of the command matches the below (`conjur-automation`):
+Using helm, prepare the Kubernetes cluster with Conjur golden config map (being sure to replace any `{{ placeholder }}` in the below snippet):
 
 ```
- 1  helm install namespace-prep cyberark/conjur-config-namespace-prep \
- 2  --create-namespace \
- 3  --namespace conjur-automation \
-...
+helm install "cluster-prep" cyberark/conjur-config-cluster-prep  -n "cyberark-conjur" \
+      --create-namespace \
+      --set conjur.account="conjur" \
+      --set conjur.applianceUrl="https://{{ SUBDOMAIN }}.secretsmgr.cyberark.cloud/api" \
+      --set conjur.certificateBase64=$(cat {{ CA_FILE_PATH }} | base64 -w 0) \
+      --set authnK8s.authenticatorID="{{ AUTHN_JWT_SERVICE_ID ]}" \
+      --set authnK8s.clusterRole.create=false \
+      --set authnK8s.serviceAccount.create=false
 ```
+
+Replace values in the above code snippet using the reference table below:
+
+| Placeholder name             | Example value        | Description       |
+| ---------------------------- | -------------------- | ----------------- |
+| `{{ SUBDOMAIN }}`            | acme-corp            | Subdomain of Conjur Cloud in ISPSS |
+| `{{ CA_FILE_PATH }}`         | conjur.pem           | Conjur Cloud public certificate    |
+| `{{ AUTHN_JWT_SERVICE_ID }}` | shared-eks `*`       | Some identifier for k8s cluster    |
+
+> `*`: In 'Prerequisites: Conjur' section, this is `{{ cluster-id }}``
+
+Create the namespace for the onboarding service to run.
+
+```
+kubectl create -f prep.yml
+```
+
+This will create the namespace `conjur-automation` and the`onboarding` service account.
+
+Now that the namespace has been created, prep it using helm:
+
+```
+helm install namespace-prep cyberark/conjur-config-namespace-prep \
+--namespace conjur-automation \
+--set conjurConfigMap.authnMethod="authn-jwt" \
+--set authnK8s.goldenConfigMap="conjur-configmap" \
+--set authnK8s.namespace="cyberark-conjur" \
+--set authnRoleBinding.create="false"
+```
+
+This will make available to `conjur-automation` namespace the golden config map created above and all the configuration details therein.
+
+> References:
+> * [**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
 
 ### Prerequisites: Certificates
 
@@ -312,6 +348,7 @@ For Key:
 
 Download the following policy files from the project directory in [Github](https://github.com/conjurdemos/JWT-Policy-Automation):
 
+* [00-authn-jwt-config.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/00-authn-jwt-config.yml)
 * [10-proxy-auth-to-auto-host.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/10-proxy-auth-to-auto-host.yml)
 * [20-automation-host-safe-load.yml](https://github.com/conjurdemos/JWT-Policy-Automation/blob/main/policy/10-proxy-auth-to-auto-host.yml)
 
@@ -319,9 +356,28 @@ Using the Conjur Cloud CLI:
 
 > **Note**: Please see [Installing the CLI](https://docs-staging.conjur.org/ConjurCloud/en/Content/ConjurCloud/CLI/cli-setup.htm?tocpath=Administration%7CConjur%20Cloud%20CLI%7C_____1) if not installed previously
 
+Make the following modifications prior to loading policy files `00-authn-jwt-config.yml` and `10-proxy-auth-to-auto-host.yml`:
+
+Replace `{{ cluster-id }}` with `AUTHN_JWT_SERVICE_ID` value (i.e., `shared-eks`)
+
+After both files have been edited...
+
 - Load the following policies:
 
   - First policy load:
+
+```
+conjur policy load -b conjur/authn-jwt -f 00-authn-jwt-config.yml
+```
+
+This does the following –
+  1. Creates a webservice and resource definitions for k8s workloads to authenticate against
+  2. Creates a group for workloads using this webservice
+  3. Entitles the group `data/apps/authenticators` to the webservice
+
+The resource definition will then need to be populated with configuration details of the K8s cluster, such as `jwks-uri` and `issuer`. Please refer to the [following section](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-authn.htm#ConfiguretheJWTAuthenticator) from Conjur Cloud official docs.
+
+  - Second policy load:
 
 ```
 conjur policy load -b data -f 10-proxy-auth.yml
@@ -332,7 +388,7 @@ This does a few things –
   2. Shares authentication entitlements to the authenticators under parent branch `data/apps`
   3. Grants resource entitlements to safes accessible by `data/apps-admins` and `data/vault-admins`
 
-  - Second policy load:
+  - Third policy load:
 
 ```
 conjur policy load -b data/vault/{{ Automation_Operations }}/delegation -f 20-automation-host-safe-load.yml
@@ -346,14 +402,6 @@ conjur policy load -b data/vault/{{ Automation_Operations }}/delegation -f 20-au
 
 ### Kubernetes
 
-Prep the namespace for the onboarding service to run.
-
-```
-kubectl create -f prep.yml
-```
-
-This will create the namespace and the service account.
-
 Populate the environment variables in `manifests/deployment.yml`.
 
 Under `env`, update the manifest with the following values:
@@ -362,7 +410,7 @@ Under `env`, update the manifest with the following values:
 | ------------------ | ------------------------------ | ------------------------------------------------------- |
 | CONJUR_TOKEN_PATH  | `"/run/conjur/access-token"`      | Default value which shouldn't change                    |
 | AUTHN_STRATEGY     | `"k8s"`                           | Currently only supported authentication type for this service |
-| SERVICE_PORT       | `"8443"`                          | This is the service port the webservices run under in K8s`*` |
+| SERVICE_PORT       | `"8443"` `*`                      | This is the service port the webservices run under in K8s |
 | CONJUR_URL         | `"https://{{ secrets-manager-uri }}/api"`  | Conjur Cloud URL |
 | CONJUR_SAFE        | `"{{ Automation_Operations }}"`     | Name of safe created to support onboarding service |
 | CONJUR_PASQUERY    | `"onboarding-sa"`                 | Custom account name of CyberArk Cloud Directory User in PCloud safe |
@@ -373,23 +421,24 @@ Under `env`, update the manifest with the following values:
 | TENANT             | `"aap****"`                     | Tenant ID of user `aap****_onboarding` |
 | CONJUR_HOST_BRANCH | `"data/apps"`                   | Parent branch for host creation in Conjur |
 
-> `*`: AAM is an three-letter acronym for the class of application (Application Access Management)
-
-> `**`: This value **must match** the value of variable `containers:containerPort` in `manifest/deployment.yml`, such as below:
-
-***deployment.yml***
-
-```
-...
-19      containers:
-20        - name: app
-21          image: <img>
-22          ports:
-23            # Used for HTTPS Services
-24            - containerPort: 8443
-25              name: on-svc-port
-...
-```
+> `*`: This value **must match** the value of variable `containers:containerPort` in `manifest/deployment.yml`, such as below:
+>
+> ***deployment.yml***
+> 
+> ```
+> ...
+> 19      containers:
+> 20        - name: app
+> 21          image: <img>
+> 22          ports:
+> 23            # Used for HTTPS Services
+> 24            - containerPort: 8443
+> 25              name: on-svc-port
+> ...
+> ```
+> 
+>
+> `**`: AAM is an three-letter acronym for the class of application (Application Access Management)
 
 **Additional Note**: Ensure that all instances of `onboarding` in both `prep.yml` and `deployment.yml` match *exactly* (i.e., Lines 5 and 9 in `service.yml` matches Lines 6, 7, 11, and 16 in `deployment.yml`)
 

@@ -66,7 +66,7 @@ Navigating to the [onboarding service user form](https://onboarding.cybr.andyhar
 
 | Attribute             | Value                      | Description               |
 | --------------------- | -------------------------- | ------------------------- |
-| Platform              | PROD_psql                  | Platform used in Onboard  |
+| Platform              | PROD_PostgreSQL            | Platform used in Onboard  |
 | Username              | psql-adm                   | Demo psql service account |
 | Password              | CyberArk1234##             | Demo password             |
 | Address               | https://some-test.com      | `https://some-test.com` is a dummy service address for demo purposes |
