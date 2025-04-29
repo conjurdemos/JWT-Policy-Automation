@@ -46,7 +46,7 @@ Replace values in the above code snippet using the reference table below:
 > `*`: In 'Prerequisites: Conjur' section, this is `{{ cluster-id }}`
 
 References:
-* [**K8s JWT: Setting up Workloads**](https://docs-er.cyberark.com/ConjurCloud/en/Content/Integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
+* [**K8s JWT: Setting up Workloads**](https://docs.cyberark.com/conjur-cloud/latest/en/content/integrations/k8s-ocp/k8s-jwt-set-up-apps.htm)
 
 ### Certificates
 
